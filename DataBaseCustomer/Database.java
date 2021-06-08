@@ -64,6 +64,17 @@ public class Database{
 
         return false;
     }
+    
+    public static Customer removeCustomer(Customer c){
+    
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("DELETE FROM Customers WHERE ");
+        sb.append(c.getEmail() + "=" + c.getEmail());
+    
+        return null;
+    
+    }
 
     public static void main(String[] args){
 
