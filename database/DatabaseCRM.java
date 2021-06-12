@@ -1,32 +1,35 @@
 package database;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
 import src.*;
 
-import java.sql.*;
-
 public class DatabaseCRM {
-    static Connection connection;
+    
+    private static Connection connection;
 
+    private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DATABASE_URL = "jdbc:mysql://sql11.freemysqlhosting.net:3306/sql11418313";
     private static final String USERNAME = "sql11418313";
     private static final String PASSWORD = "J2u5Bx3j8B";
-    private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        Class.forName(DATABASE_DRIVER);
         connectDB();
-        UserDB.readAllUserFromDB();
+        //UserDB.readAllUserFromDB();
     }
 
-    public static void connectDB() throws SQLException {
+    public static void connectDB() throws SQLException, ClassNotFoundException {
 
-        try {
+            Class.forName(DATABASE_DRIVER);
             connection = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
             System.out.println("Connected properly.");
-        } catch (Exception e) {
-            assert e instanceof SQLException;
-            printSQLException((SQLException) e);
-        }
-
+        
     }
 
     /**
@@ -53,13 +56,14 @@ public class DatabaseCRM {
                 String password = result.getString(2);
                 String name = result.getString(3);
                 String surname = result.getString(4);
+                String email = result.getString(5);
+                String phone = result.getString(6);
 
                 String output = "%d : %s - %s - %s - %s";
 
                 System.out.printf((output) + "%n", ++userCount, id, password, name, surname);
             }
         }
-
 
         public static void readAllAdminsFromDB() throws SQLException {
             String sql = "SELECT * FROM users WHERE id LIKE 'A%'";
@@ -82,6 +86,31 @@ public class DatabaseCRM {
             }
         }
 
+        public static void getAllUserFromDB(List<User> users) throws SQLException {
+            String query = "SELECT * FROM users";
+
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+
+            while (result.next()) {
+                String id = result.getString(1);
+                String password = result.getString(2);
+                String name = result.getString(3);
+                String surname = result.getString(4);
+                String email = result.getString(5);
+                String phone = result.getString(6);
+
+                if(id.charAt(0) ==  'A')
+                    users.add(new Admin(name,surname,id,password));
+                else if(id.charAt(0) == 'B')
+                    users.add(new BusinessDeveloper(name,surname,id,password));
+                else if(id.charAt(0) == 'C')
+                    users.add(new Customer(name,surname,id,password,email,phone));
+                else
+                    System.out.println("Undefinded customer id in database");
+            }
+
+        }
 
         /**
          * Read a specific User from database
@@ -304,6 +333,47 @@ public class DatabaseCRM {
             Statement statement = (Statement) connection.createStatement();
             ResultSet resultSet = statement.executeQuery(selectSql);
             return resultSet.next();
+        }
+
+    }
+
+
+    static class MessagesDB{
+
+
+        public static void readAllCustomerMessage(User user) throws SQLException{
+
+            String query = "SELECT * FROM messages WHERE customer_id = " + user.getID();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(query);
+            String message;
+
+            System.out.println(user.getName() + " messages");
+            while(resultSet.next()){
+                message = resultSet.getString(2);
+                System.out.println(message);
+            }
+        }
+
+    }
+
+
+    static class ProductDB{
+
+        public static void readAllCommentForProduct(Product product) throws SQLException{
+
+            String query = "SELECT * FROM comments WHERE product_id = " + product.getId();
+            Statement statement = connection.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(query);
+            String comment;
+
+            System.out.println(product.getName() + " comments:");
+            while(resultSet.next()){
+                comment = resultSet.getString(2);
+                System.out.println(comment);
+            }
         }
 
     }
