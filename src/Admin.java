@@ -1,7 +1,9 @@
 package src;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
+import src.ds.*;
 
 public class Admin extends User{
     private PriorityQueue<Schedule> schedules;

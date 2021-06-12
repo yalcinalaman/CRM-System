@@ -1,10 +1,9 @@
 package src;
+import src.ds.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
-import src.ds.BinarySearchTree;
-import src.ds.SkipList;
 
 public class Company {
     private String companyName;

@@ -1,5 +1,9 @@
-
+package src.ds;
 public class BinarySearchTree<E extends Comparable<E>>{
+
+    /**
+     * remove ve iterator lazım
+     */
 
     private Node<E> head;
 
@@ -70,6 +74,8 @@ public class BinarySearchTree<E extends Comparable<E>>{
 
         return strBuild.toString();
     }
+
+
 
 
 

@@ -1,5 +1,4 @@
 package src;
-
 public class User implements UserInterface {
 
     private String name;
