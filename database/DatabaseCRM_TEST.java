@@ -1,12 +1,8 @@
 package database;
-import src.Schedule;
+
 import src.User;
 
-import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
 
 public class DatabaseCRM_TEST {
     public static void main(String[] args) throws SQLException {

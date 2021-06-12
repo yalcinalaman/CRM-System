@@ -9,10 +9,12 @@ public class DatabaseCRM {
     private static final String DATABASE_URL = "jdbc:mysql://sql11.freemysqlhosting.net:3306/sql11418313";
     private static final String USERNAME = "sql11418313";
     private static final String PASSWORD = "J2u5Bx3j8B";
+    private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        Class.forName(DATABASE_DRIVER);
         connectDB();
-        //UserDB.readAllUserFromDB();
+        UserDB.readAllUserFromDB();
     }
 
     public static void connectDB() throws SQLException {
