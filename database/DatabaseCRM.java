@@ -19,10 +19,6 @@ public class DatabaseCRM {
     private static final String USERNAME = "sql11418313";
     private static final String PASSWORD = "J2u5Bx3j8B";
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        connectDB();
-        //UserDB.readAllUserFromDB();
-    }
 
     public static void connectDB() throws SQLException, ClassNotFoundException {
 
