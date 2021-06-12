@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import src.*;
@@ -35,7 +36,7 @@ public class DatabaseCRM {
     /**
      * UserDB class for database CRUD operations of user.
      */
-    static class UserDB {
+    public static class UserDB {
 
         /**
          * Reads all user from database table
@@ -86,9 +87,9 @@ public class DatabaseCRM {
             }
         }
 
-        public static void getAllUserFromDB(List<User> users) throws SQLException {
+        public static List<Admin> getAllUserFromDB() throws SQLException {
             String query = "SELECT * FROM users";
-
+            List<Admin> admins = new ArrayList<>();
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(query);
 
@@ -101,14 +102,15 @@ public class DatabaseCRM {
                 String phone = result.getString(6);
 
                 if(id.charAt(0) ==  'A')
-                    users.add(new Admin(name,surname,id,password));
-                else if(id.charAt(0) == 'B')
-                    users.add(new BusinessDeveloper(name,surname,id,password));
+                    admins.add(new Admin(name,surname,id,password));
+                /*else if(id.charAt(0) == 'B')
+                    admins.add(new BusinessDeveloper(name,surname,id,password));
                 else if(id.charAt(0) == 'C')
-                    users.add(new Customer(name,surname,id,password,email,phone));
+                    admins.add(new Customer(name,surname,id,password,email,phone));*/
                 else
                     System.out.println("Undefinded customer id in database");
             }
+            return admins;
 
         }
 
@@ -363,7 +365,7 @@ public class DatabaseCRM {
 
         public static void readAllCommentForProduct(Product product) throws SQLException{
 
-            String query = "SELECT * FROM comments WHERE product_id = " + product.getId();
+            String query = "SELECT * FROM comments WHERE product_id = " + product.getID();
             Statement statement = connection.createStatement();
             
             ResultSet resultSet = statement.executeQuery(query);

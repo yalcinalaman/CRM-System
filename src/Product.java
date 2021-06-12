@@ -34,4 +34,5 @@ public class Product implements Comparable<Product> {
         else if(this.ID.compareTo(o.ID) > 0) return 1;
         else return -1;
     }
+
 }
