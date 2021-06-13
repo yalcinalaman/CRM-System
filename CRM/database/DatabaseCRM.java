@@ -1,30 +1,35 @@
 package database;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
 import src.*;
 
-import java.sql.*;
-
 public class DatabaseCRM {
-    static Connection connection;
+    
+    private static Connection connection;
 
+    private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DATABASE_URL = "jdbc:mysql://sql11.freemysqlhosting.net:3306/sql11418313";
     private static final String USERNAME = "sql11418313";
     private static final String PASSWORD = "J2u5Bx3j8B";
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         connectDB();
         //UserDB.readAllUserFromDB();
     }
 
-    public static void connectDB() throws SQLException {
+    public static void connectDB() throws SQLException, ClassNotFoundException {
 
-        try {
+            Class.forName(DATABASE_DRIVER);
             connection = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
             System.out.println("Connected properly.");
-        } catch (Exception e) {
-            assert e instanceof SQLException;
-            printSQLException((SQLException) e);
-        }
-
+        
     }
 
     /**
@@ -51,13 +56,14 @@ public class DatabaseCRM {
                 String password = result.getString(2);
                 String name = result.getString(3);
                 String surname = result.getString(4);
+                String email = result.getString(5);
+                String phone = result.getString(6);
 
                 String output = "%d : %s - %s - %s - %s";
 
                 System.out.printf((output) + "%n", ++userCount, id, password, name, surname);
             }
         }
-
 
         public static void readAllAdminsFromDB() throws SQLException {
             String sql = "SELECT * FROM users WHERE id LIKE 'A%'";
@@ -80,6 +86,31 @@ public class DatabaseCRM {
             }
         }
 
+        public static void getAllUserFromDB(List<User> users) throws SQLException {
+            String query = "SELECT * FROM users";
+
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(query);
+
+            while (result.next()) {
+                String id = result.getString(1);
+                String password = result.getString(2);
+                String name = result.getString(3);
+                String surname = result.getString(4);
+                String email = result.getString(5);
+                String phone = result.getString(6);
+
+                if(id.charAt(0) ==  'A')
+                    users.add(new Admin(name,surname,id,password));
+                else if(id.charAt(0) == 'B')
+                    users.add(new BusinessDeveloper(name,surname,id,password));
+                else if(id.charAt(0) == 'C')
+                    users.add(new Customer(name,surname,id,password,email,phone));
+                else
+                    System.out.println("Undefinded customer id in database");
+            }
+
+        }
 
         /**
          * Read a specific User from database
@@ -304,6 +335,143 @@ public class DatabaseCRM {
             return resultSet.next();
         }
 
+    }
+
+
+    static class MessagesDB{
+
+
+        public static void readAllCustomerMessage(User user) throws SQLException{
+
+            String query = "SELECT * FROM messages WHERE customer_id = " + user.getID();
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(query);
+            String message;
+
+            System.out.println(user.getName() + " messages");
+            while(resultSet.next()){
+                message = resultSet.getString(2);
+                System.out.println(message);
+            }
+        }
+
+    }
+
+
+        static class ProductsDB{
+        static class ProductDB{
+    		private String productId;
+    		private String productName;
+    		private String category;
+    		private ArrayList<String> comments;
+    		
+    		public ProductDB(String id,String name,String category,ArrayList<String> comments) {
+    			this.productId = id;
+    			this.productName = name;
+    			this.category = category;
+    			this.comments = comments;
+    		}
+    		public String getProductId() {
+    			return this.productId;
+    		}
+    		public String getProductName() {
+    			return this.productName;
+    		}
+    		public String getCategory() {
+    			return this.category;
+    		}
+    		public ArrayList<String> getComments(){
+    			return this.comments;
+    		}
+    		public String toString() {
+    			String txt = "";
+    			txt+=("product id \t: "+this.productId);
+    			txt+=("\nproduct name \t: "+this.productName);
+    			txt+=("\nproduct category: "+this.category);
+    			txt+=("\ncomments \t: "+this.comments);
+    			return txt;
+    		}
+    	}
+    	public static Connection connectDB() {
+    		
+    		String url = "jdbc:mysql://sql11.freemysqlhosting.net:3306/sql11418313";
+    		String userName = "sql11418313";
+    		String password = "J2u5Bx3j8B";
+    		try {
+    			Connection connection = DriverManager.getConnection(url,userName,password);	
+    			return connection;
+    			
+    		} catch (SQLException e) {
+    			return null;
+    		}
+    	}
+    	public static ProductDB getProductFromDB(String productId) throws SQLException {
+    		Connection  connection = connectDB();
+    		ProductDB product = null;
+    		if(connection!=null) {	
+    			PreparedStatement statement = connection.prepareStatement("select * from sql11418313.products where products.productId = ?");
+    			statement.setString(1, productId);
+    			ResultSet res = statement.executeQuery();
+    			while(res.next()) {
+    				product = new ProductDB(res.getString("productId"), res.getString("productName"), res.getString("category"), getCommentbyProdIdDB(productId));
+    			}
+    		}
+    		return product;
+    	}
+    	public static ArrayList<String> getAllProductId() throws SQLException{
+    		ArrayList<String > list = new ArrayList<>();
+    		Connection connection = connectDB();
+    		if(connection != null) {
+    			PreparedStatement statement = connection.prepareStatement("SELECT productId FROM sql11418313.products;");
+    			ResultSet res = statement.executeQuery();
+    			while(res.next()) {
+    				list.add(res.getString("productId"));
+    			}
+    		}
+    		return list;
+    	}
+    	
+    	public static boolean updateProductName(String productId,String newName) throws SQLException {
+    		Connection connection = connectDB();
+    		if(connection != null) {
+    			PreparedStatement statement = connection.prepareStatement("UPDATE sql11418313.products set productName = ? WHERE productId = ?");
+    			statement.setString(1, newName);
+    			statement.setString(2, productId);
+    			int res =statement.executeUpdate();
+    			if(res > 0 )
+    				return true;
+    		}
+    		return false;
+    	}
+    	
+    	public static boolean addCommentDB(String productId,String comment) throws SQLException {
+    		Connection connection = connectDB();
+    		if(connection != null) {
+    			PreparedStatement statement = connection.prepareStatement("INSERT INTO sql11418313.comments values(default,?,?);");
+    			statement.setString(1,productId );
+    			statement.setString(2,comment);
+    			int res = statement.executeUpdate();
+    			if(res > 0) return true;
+    		}
+    		return false;
+    	}
+    	
+    	public static ArrayList<String> getCommentbyProdIdDB(String prodId) throws SQLException {
+    		Connection connection = connectDB();
+    		if( connection != null) {
+    			ArrayList<String> list = new ArrayList<>();
+    			PreparedStatement statement = connection
+    					.prepareStatement("SELECT * FROM sql11418313.comments where comments.productId = ?;");
+    			statement.setString(1, prodId);
+    			ResultSet res = statement.executeQuery();
+    			while(res.next()) {
+    				list.add(res.getString("comment"));
+    			}
+    			return list;
+    		}
+    		return null;
+    	}
     }
 
 
