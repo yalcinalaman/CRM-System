@@ -31,7 +31,7 @@ public class DatabaseCRM {
     /**
      * UserDB class for database CRUD operations of user.
      */
-    static class UserDB {
+    public static class UserDB {
 
         /**
          * Reads all user from database table
@@ -223,7 +223,7 @@ public class DatabaseCRM {
     /**
      * ScheduleDB class for database CRUD operations of schedule.
      */
-    static class ScheduleDB {
+    public static class ScheduleDB {
 
         /**
          * Reads all schedules from database table
@@ -334,7 +334,7 @@ public class DatabaseCRM {
     }
 
 
-    static class MessagesDB{
+    public static class MessagesDB{
 
 
         public static void readAllCustomerMessage(User user) throws SQLException{
@@ -355,7 +355,7 @@ public class DatabaseCRM {
     }
 
 
-    static class ProductDB{
+    public static class ProductDB{
 
         public static void readAllCommentForProduct(Product product) throws SQLException{
 
