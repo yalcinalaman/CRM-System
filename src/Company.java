@@ -1,11 +1,13 @@
 package src;
+import database.DatabaseCRM;
 import src.ds.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-public class Company {
+public class Company extends DatabaseCRM {
     private String companyName;
 
     private List<Admin> admin;
@@ -14,11 +16,21 @@ public class Company {
     private BinarySearchTree<Product> products;
     private Queue<UserInformationSystem> uis;
 
-    public Company(String companyName){
+    public Company(String companyName) throws SQLException, ClassNotFoundException {
+        DatabaseCRM.connectDB();
         admin = new ArrayList<>();
         businessDev = new ArrayList<>();
         customer = new SkipList<>();
         this.companyName = companyName;
+        setFields();
+        print();
+    }
+
+    //TODO remove this function
+    private void print(){
+        for(int i = 0; i < admin.size(); i++){
+            System.out.println(admin.get(i).getName());
+        }
     }
 
     public String getCompanyName() {
@@ -64,7 +76,9 @@ public class Company {
         }
     }
 
-    private void setFields(){
+    //TODO: Sadece admin için yapıyor. Bütün fieldlar için yap
+    private void setFields() throws SQLException {
+        admin = DatabaseCRM.UserDB.getAllUserFromDB();
         //TODO: Databaseden alınan veriler Admin, businessDev, customer, products ve uis variablelarına atılacak.
     }
 

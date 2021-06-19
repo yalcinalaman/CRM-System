@@ -12,11 +12,7 @@ public class DatabaseCRM_TEST {
         // User C1 = new User("customer1", "Alper", "C1", "ua55");
 
 
-        try {
-            DatabaseCRM.connectDB();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        DatabaseCRM.connectDB();
 
         //DatabaseCRM.UserDB.deleteUserFromDB("C1");
         DatabaseCRM.UserDB.createUserInDB(usin55);
