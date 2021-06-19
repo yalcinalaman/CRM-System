@@ -9,9 +9,9 @@ import java.util.List;
 public class DatabaseCRM {
     static Connection connection;
 
-    private static final String DATABASE_URL = "jdbc:mysql://remotemysql.com:3306/Hc0oY8r0E7";
-    private static final String USERNAME = "Hc0oY8r0E7";
-    private static final String PASSWORD = "9EK1fFhyp5";
+    private static final String DATABASE_URL = "jdbc:mysql://remotemysql.com:3306/cecvsYhcHb";
+    private static final String USERNAME = "cecvsYhcHb";
+    private static final String PASSWORD = "M8UDYowfD8";
 
     public static void main(String[] args) throws SQLException {
         connectDB();
