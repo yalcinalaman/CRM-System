@@ -102,6 +102,52 @@ public class DatabaseCRM {
             }
         }
 
+        // ********* //
+        /* EKLENDİ */
+        // ********* //
+        public static User readCustomerFromDB(String userID) throws SQLException {
+
+            String sql = " SELECT * FROM users where id ='" + userID + "'";
+
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            String id, password, name, surname;
+            User userReaded = null;
+            while (result.next()) {
+                String id = result.getString(1);
+                String password = result.getString(2);
+                String name = result.getString(3);
+                String surname = result.getString(4);
+                String email = result.getString(5);
+                String phone = result.getString(6);
+            }
+            if (id != null)
+                return new Customer(name, surname, id, password, email, phone);
+            else
+                return null;
+        }
+		
+		// ********* //
+        /* EKLENDİ */
+        // ********* //
+		public static void updateCustomerInDB(Customer customer) throws SQLException {
+            String sql = "UPDATE users SET password=?, name=?, surname=?,
+						  email=?, phone=? WHERE id=?";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(6, customer.getID());
+            statement.setString(1, customer.getPassword());
+            statement.setString(2, customer.getName());
+            statement.setString(3, customer.getSurName());
+			statement.setString(4, customer.getEmail());
+			statement.setString(5, customer.getPhoneNumber());
+
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("An existing user was updated successfully!");
+            }
+        }
+
         /**
          * Delete a user from database
          *
@@ -247,6 +293,7 @@ public class DatabaseCRM {
             }
             return customerList;
         }
+
     }
 
     /**
@@ -455,6 +502,21 @@ public class DatabaseCRM {
                 product = new ProductDB(res.getString("product_id"), res.getString("name"), res.getString("category"), getCommentbyProdIdDB(productId));
             }
             return product;
+        }
+
+        // ********* //
+        /* EKLENDİ */
+        // ********* //
+        public static void deleteProductFromDB(String productId) throws SQLException {
+            String sql = "DELETE FROM products WHERE product_id=?";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, productId);
+
+            int rowsDeleted = statement.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("A product was deleted successfully!");
+            }
         }
 
         public static ArrayList<String> getAllProductId() throws SQLException {
