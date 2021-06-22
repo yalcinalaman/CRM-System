@@ -111,15 +111,15 @@ public class DatabaseCRM {
 
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
-            String id, password, name, surname;
+            String id = null, password = null, name = null, surname = null,email = null,phone = null;
             User userReaded = null;
             while (result.next()) {
-                String id = result.getString(1);
-                String password = result.getString(2);
-                String name = result.getString(3);
-                String surname = result.getString(4);
-                String email = result.getString(5);
-                String phone = result.getString(6);
+                id = result.getString(1);
+                password = result.getString(2);
+                name = result.getString(3);
+                surname = result.getString(4);
+                email = result.getString(5);
+                phone = result.getString(6);
             }
             if (id != null)
                 return new Customer(name, surname, id, password, email, phone);
@@ -131,8 +131,7 @@ public class DatabaseCRM {
         /* EKLENDİ */
         // ********* //
 		public static void updateCustomerInDB(Customer customer) throws SQLException {
-            String sql = "UPDATE users SET password=?, name=?, surname=?,
-						  email=?, phone=? WHERE id=?";
+            String sql = "UPDATE users SET password=?, name=?, surname=?, email=?, phone=? WHERE id=?";
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(6, customer.getID());
@@ -190,7 +189,6 @@ public class DatabaseCRM {
             if (rowsInserted > 0) {
                 System.out.println("A new user was inserted successfully!");
             }
-
         }
 
         /**
@@ -493,13 +491,13 @@ public class DatabaseCRM {
             }
         }
 
-        public static ProductDB getProductFromDB(String productId) throws SQLException {
-            ProductDB product = null;
+        public static Product getProductFromDB(String productId) throws SQLException {
+            Product product = null;
             PreparedStatement statement = connection.prepareStatement("select * from products where product_id = ?");
             statement.setString(1, productId);
             ResultSet res = statement.executeQuery();
             while (res.next()) {
-                product = new ProductDB(res.getString("product_id"), res.getString("name"), res.getString("category"), getCommentbyProdIdDB(productId));
+                product = new Product(res.getString("product_id"), res.getString("name"), res.getString("category"), getCommentbyProdIdDB(productId));
             }
             return product;
         }
@@ -550,8 +548,8 @@ public class DatabaseCRM {
             return res > 0;
         }
 
-        public static ArrayList<String> getCommentbyProdIdDB(String prodId) throws SQLException {
-            ArrayList<String> list = new ArrayList<>();
+        public static Queue<String> getCommentbyProdIdDB(String prodId) throws SQLException {
+            Queue<String> list = new PriorityQueue<>();
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM comments where product_id = ?;");
             statement.setString(1, prodId);
             ResultSet res = statement.executeQuery();

@@ -2,41 +2,29 @@ package src;
 import DataStructures.*;
 import database.*;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.*;
 
 public class Company extends DatabaseCRM {
     private String companyName;
 
-    /*
-    private List<Admin> admin;
-    private List<BusinessDeveloper> businessDev;
-    private SkipList<Customer> customer; //SkipList has been used here.
-*/
-    private List<Admin> admin;
-    private List<BusinessDeveloper> businessDev;
-    private SkipList<Customer> customer;
-
-    private BinarySearchTree<Product> products;
-    private Queue<String> messages;
-    private Queue<UserInformationSystem> uis;
+    private static List<Admin> admin;
+    private static List<BusinessDeveloper> businessDev;
+    private static SkipList<Customer> customer;
+    private static BinarySearchTree<Product> products;
+    private static Queue<UserInformationSystem> uis;
 
     public Company(String companyName) throws SQLException, ClassNotFoundException {
         DatabaseCRM.connectDB();
         admin = new ArrayList<>();
+        QuickSort.sort(admin);
         businessDev = new ArrayList<>();
         customer = new SkipList<>();
         products = new BinarySearchTree<>();
+        uis = new LinkedList<>();
         this.companyName = companyName;
         setFields();
-        print();
-    }
-
-    //TODO remove this function
-    private void print() {
-        for (Admin value : admin) {
-            System.out.println(value.getName());
-        }
     }
 
     public String getCompanyName() {
@@ -63,11 +51,17 @@ public class Company extends DatabaseCRM {
     public void showAllBusinessDev() {
         System.out.println("\t*******BUSINESS DEVELOPERS*******");
         System.out.println(String.format("%30s\t%30s\t%10s", "Name", "Surname", "ID"));
-        ;
-        for (int i = 0; i < admin.size(); i++) {
-            System.out.println(String.format("%30s\t%30s\t%10s", businessDev.get(i).getName(),
-                    businessDev.get(i).getSurName(),
-                    businessDev.get(i).getID()));
+        NavigableMap<String, BusinessDeveloper> busDev = new TreeMap<>();
+
+        for(int i = 0; i < businessDev.size(); i++){
+            busDev.put(businessDev.get(i).getID() , businessDev.get(i));
+        }
+
+        while(busDev.size() > 0){
+            Map.Entry<String , BusinessDeveloper> entry = busDev.pollFirstEntry();
+            System.out.println(String.format("%30s\t%30s\t%10s", entry.getValue().getName(),
+                    entry.getValue().getSurName(),
+                    entry.getKey()));
         }
     }
 
@@ -87,40 +81,59 @@ public class Company extends DatabaseCRM {
         }
     }
 
-    //TODO: Sadece admin için yapıyor. Bütün fieldlar için yap
     private void setFields() throws SQLException {
         admin = DatabaseCRM.UserDB.getAllAdminsFromDB();
         customer = DatabaseCRM.UserDB.getAllCustomersFromDB();
         businessDev = DatabaseCRM.UserDB.getAllDevelopersFromDB();
-        //products = DatabaseCRM.ProductsDB.getAllProductsFromDB();
+        products = DatabaseCRM.ProductsDB.getAllProductsFromDB();
+        for(int i = 0; i < customer.size(); i++){
+            Queue<String> message_database = DatabaseCRM.MessagesDB.getMessagesOfCustomerFromDB(customer.get(i).getID());
+            customer.get(i).setMessage(message_database);
+            int size = message_database.size();
+            for(int k = 0; k < size; k++){
+                uis.add(new UserInformationSystem((Customer) customer.get(i) , message_database.poll()));
+            }
 
-        //TODO: Databaseden alınan veriler Admin, businessDev, customer, products ve uis variablelarına atılacak.
+        }
+
     }
 
+    /***
+     * Returns the admins
+     * @return Returns the all admins in a List
+     */
     public List<Admin> getAllAdmins() {
         return admin;
     }
 
+    /***
+     * Returns the products
+     * @return Returns the all products in BinarySearchTree
+     */
     public BinarySearchTree<Product> getAllProducts() {
         return products;
     }
 
+    /***
+     * Returns the Business Developers
+     * @return Returns the all business developers in a list
+     */
     public List<BusinessDeveloper> getAllBusinessDevs() {
         return businessDev;
     }
 
+    /***
+     * Returns the UserInformationSystem objects
+     * @return Returns the all UserInformationSystem objects.
+     */
     public Queue<UserInformationSystem> getUis() {
         return uis;
     }
 
-    public Queue<String> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(Queue<String> messages) {
-        this.messages = messages;
-    }
-
+    /***
+     * Returns the Customers
+     * @return Returns the all customers in a Skip List
+     */
     public SkipList<Customer> getAllCustomers() {
         return customer;
     }
@@ -168,4 +181,225 @@ public class Company extends DatabaseCRM {
         }
         throw new NoSuchElementException("There is no customer with the given ID");
     }
+
+    /***
+     * All users can login by using this method.
+     * @param ID
+     * @param password
+     * @return
+     */
+    public boolean login(String ID, String password){
+        if(ID.charAt(0) == 'A'){
+            for(int i = 0; i < admin.size(); i++){
+                if(admin.get(i).getID().equals(ID) && admin.get(i).getPassword().equals(password)) return true;
+            }
+        }
+        else if(ID.charAt(0) == 'B'){
+            for(int i = 0; i < businessDev.size(); i++){
+                if(businessDev.get(i).getID().equals(ID) && businessDev.get(i).getPassword().equals(password)) return true;
+            }
+        }
+        else if(ID.charAt(0) == 'C'){
+            for(int i = 0; i < customer.size(); i++){
+                if(customer.get(i).getID().equals(ID) && customer.get(i).getPassword().equals(password)) return true;
+            }
+        }
+        return false;
+    }
+
+    /* ADMIN VE BUSINESS DEVELOPER İÇİN DATABASE EKLEME FONKSİYONU YOK */
+    public void signUp(User user) throws SQLException {
+        if(user.getClass().toString().equals("Admin")){
+            admin.add(new Admin(user.getName(),user.getSurName(), user.getID(), user.getPassword()));
+            //eksik
+        }
+        else if(user.getClass().toString().equals("BusinessDeveloper"))
+        {
+            businessDev.add(new BusinessDeveloper(user.getName(),user.getSurName(), user.getID(), user.getPassword()));
+            //eksik
+        }
+        else if(user.getClass().toString().equals("Customer")){
+            customer.add(new Customer(user.getName(),user.getSurName(), user.getID(), user.getPassword()));
+            DatabaseCRM.UserDB.createCustomerInDB(user);
+        }
+
+    }
+
+    /***
+     * Adds new product into the Database and also into the list
+     * @param product
+     */
+    public static void addProduct(Product product){
+        products.add(product);
+        //DatabaseCRM.ProductsDB.
+        //Add fonksiyonu yok
+    }
+
+    /***
+     * Removes the product from the Binary Search Tree and also from Database
+     * @param ID
+     * @throws SQLException
+     */
+    public static void removeProduct(String ID) throws SQLException {
+        BinarySearchTree.BST_Iterator iter = products.iterator();
+        while(iter.hasNext()){
+            Product product = (Product) iter.next();
+            if(product.getID().equals(ID)){
+                products.delete(product);
+                DatabaseCRM.ProductsDB.deleteProductFromDB(product.getID());
+                System.out.println("Product is removed!");
+                return;
+            }
+        }
+    }
+
+    /***
+     * Updates the name of the Product
+     * @param product
+     * @throws SQLException
+     */
+    public static void updateProduct(Product product) throws SQLException {
+        DatabaseCRM.ProductsDB.updateProductName(product.getID(), product.getName());
+        BinarySearchTree.BST_Iterator iter = products.iterator();
+        while(iter.hasNext()){
+            Product item = (Product) iter.next();
+            if(item.getID().equals(product.getID())){
+                products.delete(item);
+                products.add(product);
+            }
+        }
+    }
+
+    /***
+     * Searches a product in BinarySearchTree
+     * @param ID
+     * @return Product if it exists, otherwise null
+     */
+    public static Product getProduct(String ID){
+        BinarySearchTree.BST_Iterator iter = products.iterator();
+
+        while(iter.hasNext()){
+            Product item = (Product) iter.next();
+            if(item.getID().equals(ID)){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /***
+     * Removes admin from the list and also database
+     * @param ID
+     * @throws SQLException
+     */
+    public static void removeAdmin(String ID) throws SQLException {
+        for(int i = 0; i < admin.size(); i++){
+            if(admin.get(i).getID().equals(ID)){
+                admin.remove(i);
+                DatabaseCRM.UserDB.deleteUserFromDB(admin.get(i).getID());
+                System.out.println("Admin is removed!");
+                return;
+            }
+        }
+    }
+
+    /***
+     * Removes the Customer from the SkipList and also from database
+     * @param ID
+     * @throws SQLException
+     */
+    public static void removeCustomer(String ID) throws SQLException {
+        for(int i = 0; i < customer.size(); i++){
+            if(customer.get(i).getID().equals(ID)){
+                customer.remove(customer.get(i));
+                DatabaseCRM.UserDB.deleteUserFromDB(customer.get(i).getID());
+                System.out.println("Customer is removed!");
+                return;
+            }
+        }
+    }
+
+    /***
+     * Removes Business Developer from the list and also database
+     * @param ID
+     * @throws SQLException
+     */
+    public static void removeBusinessDev(String ID) throws SQLException {
+        for(int i = 0; i < businessDev.size(); i++){
+            if(businessDev.get(i).getID().equals(ID)){
+                businessDev.remove(i);
+                DatabaseCRM.UserDB.deleteUserFromDB(businessDev.get(i).getID());
+                System.out.println("Business Developer is removed!");
+                return;
+            }
+        }
+    }
+
+    /***
+     * Updates the user
+     * @param user
+     * @throws NoSuchElementException
+     * @throws SQLException
+     */
+    public static void updateUser(User user) throws NoSuchElementException, SQLException {
+        if(user == null) throw new NoSuchElementException();
+        if(user.getID().charAt(0) == 'C'){
+            DatabaseCRM.UserDB.updateCustomerInDB((Customer) user);
+            for(int i = 0; i < customer.size(); i++){
+                if(customer.get(i).getID().equals(user.getID())){
+                    customer.remove(customer.get(i));
+                    customer.add((Customer) user);
+                }
+            }
+        }
+        else{
+            DatabaseCRM.UserDB.updateUserInDB(user);
+            if(user.getID().charAt(0) == 'A'){
+                for(int i = 0; i < admin.size(); i++){
+                    if(admin.get(i).getID().equals(user.getID())){
+                        admin.set(i, (Admin) user);
+                    }
+                }
+            }
+            else if(user.getID().charAt(0) == 'B'){
+                for(int i = 0; i < businessDev.size(); i++){
+                    if(businessDev.get(i).getID().equals(user.getID())){
+                        businessDev.set(i, (BusinessDeveloper) user);
+                    }
+                }
+            }
+        }
+
+    }
+
+    /***
+     * Adds new user into the Database
+     * @param user
+     * @throws SQLException
+     */
+    public static void addUser(User user) throws SQLException {
+        if(user.getID().charAt(0) == 'A'){
+            admin.add((Admin) user);
+        }
+        else if(user.getID().charAt(0) == 'B'){
+            businessDev.add((BusinessDeveloper) user);
+        }
+        else {
+            customer.add((Customer) user);
+            DatabaseCRM.UserDB.createCustomerInDB((Customer) user);
+        }
+        //Database içinde business ve admin oluşturma fonksiyonları yok.
+    }
+
+    /**
+     * Adds new message into the uis field
+     * @param item
+     */
+    protected static void addNewMessage(UserInformationSystem item){
+        uis.add(item);
+        //Database içerisine message kaydetme yok
+    }
+
+
+
 }

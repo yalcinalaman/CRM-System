@@ -1,4 +1,9 @@
 package src;
+import DataStructures.BinarySearchTree;
+import database.DatabaseCRM;
+
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
@@ -8,10 +13,16 @@ public class Customer extends User implements Comparable<Customer> {
     private Queue<String> message;
 
 
-    public Customer(String name, String surName, String ID, String password, String email, String phoneNumber) {
+    public Customer(String name, String surName, String ID, String password, String email, String phoneNumber) throws SQLException {
         super(name, surName, ID, password);
         this.email = email;
         this.phoneNumber = phoneNumber;
+        message = DatabaseCRM.MessagesDB.getMessagesOfCustomerFromDB(ID);
+    }
+
+    public Customer(String name, String surName, String ID, String password) throws SQLException {
+        super(name,surName,ID,password);
+        message = DatabaseCRM.MessagesDB.getMessagesOfCustomerFromDB(ID);
     }
 
     public void setEmail(String email) {
@@ -25,7 +36,6 @@ public class Customer extends User implements Comparable<Customer> {
     public void setMessage(Queue<String> message) {
         this.message = message;
     }
-
 
     public String getEmail() {
         return email;
@@ -54,6 +64,8 @@ public class Customer extends User implements Comparable<Customer> {
     public void sendMessage(String msg) throws Exception {
         if (msg.length() == 0) throw new Exception("Message cannot be an empty string");
         message.add(msg);
+        Company.addNewMessage(new UserInformationSystem(this,msg));
+
         System.out.println("Message has been sent. The seller is going to respond it within 48 days.");
     }
 
@@ -65,14 +77,22 @@ public class Customer extends User implements Comparable<Customer> {
         return message;
     }
 
-    /**
-     * Burada bir adet BinarySearchTree almalı. Diğer türlü eğer company classını extend edersem constructor çağırdığında güncelde bululan Company
-     * objesi kullanılmayacak. Bu classları Company veya CRMSystem içerisinden çağırırız diye products alabilecek şekilde bıraktım.
+    /***
+     * Searches the product in the products binarySearchTree
+     * @param products
+     * @param ID
+     * @return Product if it exists, otherwise null
      */
-    //TODO: BinarySearchTree için iterator lazım.
-    /*public boolean findProduct(BinarySearchTree<Product> products, int ID) {
-    }*/
-
+    public Product findProduct(BinarySearchTree<Product> products, String ID) {
+        BinarySearchTree.BST_Iterator iter = products.iterator();
+        while(iter.hasNext()){
+            Product product = (Product) iter.next();
+            if(product.getID().equals(ID)){
+                return product;
+            }
+        }
+        return null;
+    }
 
     /***
      * Compares two customers values by their names

@@ -1,17 +1,20 @@
 package src;
+import DataStructures.BinarySearchTree;
+import database.DatabaseCRM;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class Admin extends User{
+public class Admin extends User implements Comparable<Admin>{
     private PriorityQueue<Schedule> schedules;
 
     public Admin(String name, String surName, String ID, String password) {
         super(name, surName, ID, password);
     }
 
-    public boolean addBusinessDev(User user){
+    public boolean addBusinessDev(User user) throws SQLException {
         if(user == null){
             System.out.println("Invalid input!");
             return false;
@@ -39,7 +42,7 @@ public class Admin extends User{
      * @param user
      * @return
      */
-    public boolean addCustomer(User user){
+    public boolean addCustomer(User user) throws SQLException {
         if(user == null){
             System.out.println("Invalid input!");
             return false;
@@ -68,13 +71,13 @@ public class Admin extends User{
      * @param ID
      * @return
      */
-    public boolean removeCustomer(String ID){
+    public boolean removeCustomer(String ID) throws SQLException {
         if (ID == null){
             System.out.println("Invalid ID!");
             return false;
         }
-        if (userID.charAt(0) == 'C'){
-            Customer temp =  (Customer) DatabaseCRM.UserDB.readUserFromDB(userID);
+        if (ID.charAt(0) == 'C'){
+            Customer temp =  (Customer) DatabaseCRM.UserDB.readCustomerFromDB(ID);
             if (temp == null){
                 System.out.println("Invalid ID!!");
                 return false;
@@ -99,7 +102,7 @@ public class Admin extends User{
             return false;
         }
         if (userID.charAt(0) == 'B'){
-            BusinessDeveloper temp =  (BusinessDeveloper) DatabaseCRM.UserDB.readUserFromDB(userID);
+            //BusinessDeveloper temp =  (BusinessDeveloper) DatabaseCRM.UserDB.readUserFromDB(userID);
             if (temp == null){
                 System.out.println("Invalid ID!!");
                 return false;
@@ -118,8 +121,8 @@ public class Admin extends User{
      * @param productId
      * @return
      */
-    public boolean removeProduct(String productId){
-        if (ID == null){
+    public boolean removeProduct(String productId) throws SQLException {
+        if (productId == null){
             System.out.println("Invalid ID!");
             return false;
         }
@@ -137,7 +140,7 @@ public class Admin extends User{
      * @param userID
      * @param name
      */
-    public void setUserName(String userID, String name){
+    public void setUserName(String userID, String name) throws SQLException {
         if (name == null || userID == null){
             System.out.println("Invalid ID or name!");
             return;
@@ -175,13 +178,13 @@ public class Admin extends User{
      * @param userID
      * @param email
      */
-    public void setCustomerEmail(String userID, String email){
+    public void setCustomerEmail(String userID, String email) throws SQLException {
         if (email == null || userID == null){
             System.out.println("Invalid ID or email!");
             return;
         }
         if (userID.charAt(0) == 'C'){
-            Customer temp =  DatabaseCRM.UserDB.readCustomerFromDB(userID);
+            Customer temp = (Customer) DatabaseCRM.UserDB.readCustomerFromDB(userID);
             if (temp == null){
                 System.out.println("Invalid ID!!");
                 return;
@@ -200,13 +203,13 @@ public class Admin extends User{
      * @param userID
      * @param phoneNumber
      */
-    public void setCustomerPhoneNumber(String userID, String phoneNumber){
+    public void setCustomerPhoneNumber(String userID, String phoneNumber) throws SQLException {
         if (phoneNumber == null || userID == null){
             System.out.println("Invalid ID or email!");
             return;
         }
         if (userID.charAt(0) == 'C'){
-            Customer temp = DatabaseCRM.UserDB.readCustomerFromDB(userID);
+            Customer temp = (Customer) DatabaseCRM.UserDB.readCustomerFromDB(userID);
             if (temp == null){
                 System.out.println("Invalid ID!!");
                 return;
@@ -223,7 +226,7 @@ public class Admin extends User{
     /**
      * Prints all users in the system
      */
-    public void viewAllUsers(){
+    public void viewAllUsers() throws SQLException {
         DatabaseCRM.UserDB.readAllUserFromDB();
     }
 
@@ -231,7 +234,7 @@ public class Admin extends User{
      * Prints and return all products in the system
      * @return all products in the system
      */
-    public BinarySearchTree<Product> getAllProducts(){
+    public BinarySearchTree<Product> getAllProducts() throws SQLException {
         BinarySearchTree<Product> allProducts = DatabaseCRM.ProductsDB.getAllProductsFromDB();
         System.out.println(allProducts.toString());
         return allProducts;
@@ -244,7 +247,7 @@ public class Admin extends User{
      * @param productId
      * @return true if the product exists in the system otherwise return false.
      */
-    public boolean findProduct(String productId){
+    public boolean findProduct(String productId) throws SQLException {
         if (productId == null){
             System.out.println("Invalid productId!");
             return false;
@@ -265,7 +268,20 @@ public class Admin extends User{
     public void addSchedule(){}
     public void removeSchedule(){}
 
+    /***
+     * Compares two admins values by their names
+     * @param o
+     * @return 0 when names are equal, 1 when the calling admin's name is higher. Returns -1 otherwise.
+     */
 
-
-
+    @Override
+    public int compareTo(Admin o) {
+        if (this.getName().compareTo(o.getName()) == 0) {
+            return 0;
+        } else if (this.getName().compareTo(o.getName()) > 0) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
 }

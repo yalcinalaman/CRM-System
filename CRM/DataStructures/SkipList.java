@@ -113,6 +113,16 @@ public class SkipList<E extends Comparable<E>> implements Iterable<E>{
         }
     }
 
+    public E get(int index){
+        int count = 0;
+        Iterator<E> iter = this.iterator();
+        while(iter.hasNext() && count != index){
+            iter.next();
+            count++;
+        }
+        return iter.next();
+    }
+
     public int size(){
         return size;
     }

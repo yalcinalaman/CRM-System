@@ -18,6 +18,15 @@ public class Product implements Comparable<Product> {
         DatabaseCRM.connectDB();
     }
 
+    public Product(String name , String ID , String category, Queue<String> comments) throws SQLException {
+        this.name = name;
+        this.ID = ID;
+        this.category = category;
+        this.comments = comments;
+        DatabaseCRM.connectDB();
+    }
+
+
     public String getCategory(){return category;};
     public String getName(){return name;};
     public String getID() {
