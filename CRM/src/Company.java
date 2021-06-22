@@ -207,20 +207,19 @@ public class Company extends DatabaseCRM {
         return false;
     }
 
-    /* ADMIN VE BUSINESS DEVELOPER İÇİN DATABASE EKLEME FONKSİYONU YOK */
     public void signUp(User user) throws SQLException {
         if(user.getClass().toString().equals("Admin")){
             admin.add(new Admin(user.getName(),user.getSurName(), user.getID(), user.getPassword()));
-            //eksik
+            DatabaseCRM.UserDB.createUserInDB(user);
         }
         else if(user.getClass().toString().equals("BusinessDeveloper"))
         {
             businessDev.add(new BusinessDeveloper(user.getName(),user.getSurName(), user.getID(), user.getPassword()));
-            //eksik
+            DatabaseCRM.UserDB.createUserInDB(user);
         }
         else if(user.getClass().toString().equals("Customer")){
             customer.add(new Customer(user.getName(),user.getSurName(), user.getID(), user.getPassword()));
-            DatabaseCRM.UserDB.createCustomerInDB(user);
+            DatabaseCRM.UserDB.createCustomerInDB((Customer) user);
         }
 
     }
@@ -380,15 +379,16 @@ public class Company extends DatabaseCRM {
     public static void addUser(User user) throws SQLException {
         if(user.getID().charAt(0) == 'A'){
             admin.add((Admin) user);
+            DatabaseCRM.UserDB.createUserInDB(user);
         }
         else if(user.getID().charAt(0) == 'B'){
             businessDev.add((BusinessDeveloper) user);
+            DatabaseCRM.UserDB.createUserInDB(user);
         }
         else {
             customer.add((Customer) user);
             DatabaseCRM.UserDB.createCustomerInDB((Customer) user);
         }
-        //Database içinde business ve admin oluşturma fonksiyonları yok.
     }
 
     /**

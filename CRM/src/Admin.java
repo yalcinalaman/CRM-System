@@ -27,7 +27,8 @@ public class Admin extends User implements Comparable<Admin>{
             }
             else {
                 /* ******************* */
-                DatabaseCRM.UserDB.createCustomerInDB(user);
+               // DatabaseCRM.UserDB.createUserInDB(user);
+                Company.addUser(user);
                 return true;
             }
         }
@@ -54,7 +55,7 @@ public class Admin extends User implements Comparable<Admin>{
                 return false;
             }
             else {
-                DatabaseCRM.UserDB.createCustomerInDB(user);
+                Company.addUser(user);
                 return true;
             }
         }
@@ -82,7 +83,8 @@ public class Admin extends User implements Comparable<Admin>{
                 System.out.println("Invalid ID!!");
                 return false;
             }
-            DatabaseCRM.UserDB.deleteUserFromDB(ID);
+            Company.removeCustomer(ID);
+           // DatabaseCRM.UserDB.deleteUserFromDB(ID);
             return true;
         }
         else {
@@ -96,18 +98,19 @@ public class Admin extends User implements Comparable<Admin>{
      * @param ID
      * @return
      */
-    public boolean removeBusinessDev(String ID){
+    public boolean removeBusinessDev(String ID) throws SQLException {
         if (ID == null){
             System.out.println("Invalid ID!");
             return false;
         }
-        if (userID.charAt(0) == 'B'){
+        if (ID.charAt(0) == 'B'){
             //BusinessDeveloper temp =  (BusinessDeveloper) DatabaseCRM.UserDB.readUserFromDB(userID);
-            if (temp == null){
+           /* if (temp == null){
                 System.out.println("Invalid ID!!");
                 return false;
-            }
-            DatabaseCRM.UserDB.deleteUserFromDB(ID);
+            }*/
+            Company.removeBusinessDev(ID);
+            //DatabaseCRM.UserDB.deleteUserFromDB(ID);
             return true;
         }
         else {
@@ -131,7 +134,8 @@ public class Admin extends User implements Comparable<Admin>{
             System.out.println("Product not found");
             return false;
         }
-        DatabaseCRM.ProductsDB.deleteProductFromDB(productId);
+        Company.removeProduct(productId);
+        //DatabaseCRM.ProductsDB.deleteProductFromDB(productId);
         return true;
     }
 
@@ -145,13 +149,16 @@ public class Admin extends User implements Comparable<Admin>{
             System.out.println("Invalid ID or name!");
             return;
         }
-        User temp = DatabaseCRM.UserDB.readUserFromDB(userID);
+        //Error vardı o yüzden yoruma aldım. @Arda
+        /*User temp = DatabaseCRM.UserDB.readUserFromDB(userID);
         if (temp == null){
             System.out.println("Invalid ID!!");
             return;
         }
         temp.setName(name);
-        DatabaseCRM.UserDB.updateUserInDB(temp);
+        DatabaseCRM.UserDB.updateUserInDB(temp);*/
+        setName(name);
+        Company.updateUser(new User(name , this.getSurName() , userID , this.getPassword()));
     }
 
     /**
@@ -159,18 +166,20 @@ public class Admin extends User implements Comparable<Admin>{
      * @param userID
      * @param surName
      */
-    public void setUserSurName(String userID, String surName){
+    public void setUserSurName(String userID, String surName) throws SQLException {
         if (surName == null || userID == null){
             System.out.println("Invalid ID or surname!");
             return;
         }
-        User temp = DatabaseCRM.UserDB.readUserFromDB(userID);
+        /*User temp = DatabaseCRM.UserDB.readUserFromDB(userID);
         if (temp == null){
             System.out.println("Invalid ID!!");
             return;
         }
         temp.setSurName(surName);
-        DatabaseCRM.UserDB.updateCustomerInDB(temp);
+        DatabaseCRM.UserDB.updateCustomerInDB(temp);*/
+        setSurName(surName);
+        Company.updateUser(new User(getName() , this.getSurName() , userID , this.getPassword()));
     }
 
     /**
@@ -178,6 +187,8 @@ public class Admin extends User implements Comparable<Admin>{
      * @param userID
      * @param email
      */
+
+    // TODO: Bu fonksiyon şuan çalışmıyor çünkü Database içerisinde çağırılan fonksiyon email kaydetmesi yapmıyor.
     public void setCustomerEmail(String userID, String email) throws SQLException {
         if (email == null || userID == null){
             System.out.println("Invalid ID or email!");
@@ -203,6 +214,8 @@ public class Admin extends User implements Comparable<Admin>{
      * @param userID
      * @param phoneNumber
      */
+
+    // TODO: Bu fonksiyon şuan çalışmıyor çünkü Database içerisinde çağırılan fonksiyon telefon numarası kaydetmesi yapmıyor.
     public void setCustomerPhoneNumber(String userID, String phoneNumber) throws SQLException {
         if (phoneNumber == null || userID == null){
             System.out.println("Invalid ID or email!");
@@ -236,10 +249,13 @@ public class Admin extends User implements Comparable<Admin>{
      */
     public BinarySearchTree<Product> getAllProducts() throws SQLException {
         BinarySearchTree<Product> allProducts = DatabaseCRM.ProductsDB.getAllProductsFromDB();
-        System.out.println(allProducts.toString());
+        //Bence burada bastırmamalı. 2 farklı işlem yapmış oluyor method
+        //System.out.println(allProducts.toString());
         return allProducts;
     }
 
+
+    //TODO: Bence bu method Product objesi döndürmeli. Bu şekilde menü yazarken daha rahat kullanılır. @Arda
     /**
      * Search for the product specified in the system.
      * If the product exists in the system, it prints
@@ -254,7 +270,7 @@ public class Admin extends User implements Comparable<Admin>{
         }
         Product temp = DatabaseCRM.ProductsDB.getProductFromDB(productId);
         if (temp == null){
-            System.out.println("Product not found!");
+            System.out.println("Product is not found!");
             return false;
         }
         System.out.println(temp.toString());
@@ -262,7 +278,7 @@ public class Admin extends User implements Comparable<Admin>{
     }
 
 
-    public boolean addProduct(Product product){}
+    public boolean addProduct(Product product){return true;}
     public void manageCustomersFeedBack(){}
     public void manageSchedule(){}
     public void addSchedule(){}
