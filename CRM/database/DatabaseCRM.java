@@ -431,6 +431,22 @@ public class DatabaseCRM {
                 System.out.println(message);
             }
         }
+	    
+	    
+	public static void createMessageDB(User user,String message) throws SQLException {
+
+            String sql = "INSERT INTO messages (customer_id, message) VALUES (?,?)";
+
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getID());
+            statement.setString(2,message);
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Message inserted successfully!");
+            }
+
+        }
 
         /**
          * @return ArrayList of Admin
