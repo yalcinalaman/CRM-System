@@ -167,12 +167,12 @@ public class DatabaseCRM {
         }
 
         /**
-         * create a customer in database
+         * create a user in database
          *
-         * @param customer created customer object
+         * @param user created customer object
          * @throws SQLException throws a SQLException
          */
-        public static void createCustomerInDB(User customer) throws SQLException {
+        public static void createUserInDB(User customer) throws SQLException {
 
             if (hasExistUser(customer.getID())) {
                 System.err.println("This ID: " + customer.getID() + " has exist in Database.");
@@ -185,6 +185,35 @@ public class DatabaseCRM {
             statement.setString(2, customer.getPassword());
             statement.setString(3, customer.getName());
             statement.setString(4, customer.getSurName());
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("A new user was inserted successfully!");
+            }
+
+        }
+
+        /**
+         * create a customer in database
+         *
+         * @param customer created customer object
+         * @throws SQLException throws a SQLException
+         */
+        public static void createCustomerInDB(Customer customer) throws SQLException {
+
+            if (hasExistUser(customer.getID())) {
+                System.err.println("This ID: " + customer.getID() + " has exist in Database.");
+                return;
+            }
+
+            String sql = "INSERT INTO users(id, password, name, surname, email, phone) VALUES (?,?,?,?,?,?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, customer.getID());
+            statement.setString(2, customer.getPassword());
+            statement.setString(3, customer.getName());
+            statement.setString(4, customer.getSurName());
+            statement.setString(5,customer.getEmail());
+            statement.setString(6,customer.getPhoneNumber());
 
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted > 0) {
