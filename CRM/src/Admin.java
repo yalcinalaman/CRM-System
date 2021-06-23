@@ -3,15 +3,14 @@ import DataStructures.BinarySearchTree;
 import database.DatabaseCRM;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Admin extends User implements Comparable<Admin>{
     private PriorityQueue<Schedule> schedules;
 
     public Admin(String name, String surName, String ID, String password) {
         super(name, surName, ID, password);
+        schedules = new PriorityQueue<>();
     }
 
     public boolean addBusinessDev(User user) throws SQLException {
@@ -26,8 +25,6 @@ public class Admin extends User implements Comparable<Admin>{
                 return false;
             }
             else {
-                /* ******************* */
-               // DatabaseCRM.UserDB.createUserInDB(user);
                 Company.addUser(user);
                 return true;
             }
@@ -149,16 +146,18 @@ public class Admin extends User implements Comparable<Admin>{
             System.out.println("Invalid ID or name!");
             return;
         }
-        //Error vardı o yüzden yoruma aldım. @Arda
-        /*User temp = DatabaseCRM.UserDB.readUserFromDB(userID);
-        if (temp == null){
-            System.out.println("Invalid ID!!");
-            return;
+        User temp = null;
+        if(userID.charAt(0) == 'A')
+            temp = Company.getAdmin(userID);
+        else if(userID.charAt(0) == 'B')
+            temp = Company.getBusinessDev(userID);
+        else if(userID.charAt(0) == 'C')
+            temp = Company.getCustomer(userID);
+
+        if (temp != null) {
+            temp.setName(name);
+            Company.updateUser(temp);
         }
-        temp.setName(name);
-        DatabaseCRM.UserDB.updateUserInDB(temp);*/
-        setName(name);
-        Company.updateUser(new User(name , this.getSurName() , userID , this.getPassword()));
     }
 
     /**
@@ -171,15 +170,18 @@ public class Admin extends User implements Comparable<Admin>{
             System.out.println("Invalid ID or surname!");
             return;
         }
-        /*User temp = DatabaseCRM.UserDB.readUserFromDB(userID);
-        if (temp == null){
-            System.out.println("Invalid ID!!");
-            return;
+        User temp = null;
+        if(userID.charAt(0) == 'A')
+            temp = Company.getAdmin(userID);
+        else if(userID.charAt(0) == 'B')
+            temp = Company.getBusinessDev(userID);
+        else if(userID.charAt(0) == 'C')
+            temp = Company.getCustomer(userID);
+
+        if (temp != null) {
+            temp.setSurName(surName);
+            Company.updateUser(temp);
         }
-        temp.setSurName(surName);
-        DatabaseCRM.UserDB.updateCustomerInDB(temp);*/
-        setSurName(surName);
-        Company.updateUser(new User(getName() , this.getSurName() , userID , this.getPassword()));
     }
 
     /**
@@ -195,18 +197,16 @@ public class Admin extends User implements Comparable<Admin>{
             return;
         }
         if (userID.charAt(0) == 'C'){
-            Customer temp = (Customer) DatabaseCRM.UserDB.readCustomerFromDB(userID);
-            if (temp == null){
+            Customer temp = Company.getCustomer(userID);
+            /*if (temp == null){
                 System.out.println("Invalid ID!!");
                 return;
-            }
+            }*/
             temp.setEmail(email);
-            DatabaseCRM.UserDB.updateCustomerInDB(temp);
+            Company.updateUser(temp);
         }
-        else {
+        else
             System.out.println("Invalid ID!");
-            return;
-        }
     }
 
     /**
@@ -222,18 +222,16 @@ public class Admin extends User implements Comparable<Admin>{
             return;
         }
         if (userID.charAt(0) == 'C'){
-            Customer temp = (Customer) DatabaseCRM.UserDB.readCustomerFromDB(userID);
-            if (temp == null){
+            Customer temp = Company.getCustomer(userID);
+            /*if (temp == null){
                 System.out.println("Invalid ID!!");
                 return;
-            }
+            }*/
             temp.setPhoneNumber(phoneNumber);
-            DatabaseCRM.UserDB.updateUserInDB(temp);
+            Company.updateUser(temp);
         }
-        else {
+        else
             System.out.println("Invalid ID!");
-            return;
-        }
     }
 
     /**
@@ -244,45 +242,114 @@ public class Admin extends User implements Comparable<Admin>{
     }
 
     /**
-     * Prints and return all products in the system
+     * Returns all products in the system
      * @return all products in the system
      */
     public BinarySearchTree<Product> getAllProducts() throws SQLException {
+        // BinarySearchTree<Product> allProducts = Company.getAllProducts();
         BinarySearchTree<Product> allProducts = DatabaseCRM.ProductsDB.getAllProductsFromDB();
-        //Bence burada bastırmamalı. 2 farklı işlem yapmış oluyor method
-        //System.out.println(allProducts.toString());
         return allProducts;
     }
 
-
-    //TODO: Bence bu method Product objesi döndürmeli. Bu şekilde menü yazarken daha rahat kullanılır. @Arda
     /**
      * Search for the product specified in the system.
-     * If the product exists in the system, it prints
-     * the product's information and returns true otherwise return false.
+     * If the product exists in the system, it returns
+     * the Product object otherwise returns null
      * @param productId
-     * @return true if the product exists in the system otherwise return false.
+     * @return null or Product object
      */
-    public boolean findProduct(String productId) throws SQLException {
+    public Product findProduct(String productId) throws SQLException {
         if (productId == null){
             System.out.println("Invalid productId!");
-            return false;
+            return null;
         }
-        Product temp = DatabaseCRM.ProductsDB.getProductFromDB(productId);
+        /*Product temp = DatabaseCRM.ProductsDB.getProductFromDB(productId);
         if (temp == null){
             System.out.println("Product is not found!");
-            return false;
-        }
-        System.out.println(temp.toString());
-        return true;
+            return null;
+        } */
+        return Company.getProduct(productId);
     }
 
 
-    public boolean addProduct(Product product){return true;}
+    /**
+     * Adds a product to the system
+     * @param product
+     */
+    public void addProduct(Product product){
+        if (product == null){
+            System.out.println("Invalid");
+            return;
+        }
+        Company.addProduct(product);
+    }
+
+    /**
+     *
+     * @param schedule
+     */
+    public void addSchedule(Schedule schedule){
+        schedules.add(schedule);
+    }
+
+    /**
+     *
+     * @param scheduleNum
+     */
+    public void removeSchedule(int scheduleNum){
+        if (scheduleNum <= schedules.size() && scheduleNum>0){
+            Iterator<Schedule> iter = schedules.iterator();
+            Schedule removed = null;
+            for (int i=0; i<scheduleNum; i++)
+                removed = iter.next();
+            schedules.remove(removed);
+        }
+        else
+            System.out.println("Invalid Input!");
+    }
+
+    /**
+     *
+     * @param scheduleNum
+     */
+    public void manageSchedule(int scheduleNum, int year){
+        if (scheduleNum <= schedules.size() && scheduleNum>0){
+            Iterator<Schedule> iter = schedules.iterator();
+            Schedule schedule = null;
+            for (int i=0; i<scheduleNum; i++)
+                schedule = iter.next();
+            schedules.remove(schedule);
+            Date date1 = schedule.getDate();
+            date1.setYear(year - 1900);
+            schedule.setDate(date1);
+            schedules.add(schedule);
+        }
+        else
+            System.out.println("Invalid Input!");
+    }
+
+    /**
+     *
+     */
+    public void printsSchedule(){
+        if (schedules.isEmpty())
+            System.out.println("EMPTY");
+        else {
+            int i=0;
+            for (Schedule ss: schedules) {
+                int year = ss.getDate().getYear() + 1900;
+                int month = ss.getDate().getMonth() + 1;
+                int day = ss.getDate().getDate();
+                String str = year + "/" + month + "/" + day;
+                System.out.println(++i + " " +str+ " " + ss.getProcess() );
+            }
+        }
+    }
+
+    // TODO:
     public void manageCustomersFeedBack(){}
-    public void manageSchedule(){}
-    public void addSchedule(){}
-    public void removeSchedule(){}
+
+
 
     /***
      * Compares two admins values by their names

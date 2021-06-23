@@ -1,6 +1,8 @@
 package src;
 
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 public class CRMSystem{
@@ -165,17 +167,36 @@ public class CRMSystem{
                     id = input.next();
                     admin.removeProduct(id);
                     break;
+                // düzenlendi @murat
                 case 7:
                     System.out.println(ANSI_YELLOW + "Manage Schedule Page"+ANSI_RESET);
-                    admin.manageSchedule();
+                    admin.printsSchedule();
+                    System.out.println("Enter the process you want to edit(as integer): ");
+                    int num = input.nextInt();
+                    System.out.println("Enter new year value: ");
+                    int year = input.nextInt();
+                    admin.manageSchedule(num, year);
                     break;
+                // düzenlendi @murat
                 case 8:
                     System.out.println(ANSI_YELLOW + "Add Schedule Page"+ANSI_RESET);
-                    admin.addSchedule();
+                    System.out.println("Enter Process: ");
+                    String process = input.next();
+                    Date date = new Date();
+                    if (process != null){
+                        Schedule schedule = new Schedule(date, process);
+                        admin.addSchedule(schedule);
+                    }
+                    else
+                        System.out.println("Error!");
                     break;
+                // düzenlendi @murat
                 case 9:
                     System.out.println(ANSI_YELLOW + "Remove Schedule Page"+ANSI_RESET);
-                    admin.removeSchedule();
+                    admin.printsSchedule();
+                    System.out.println("Enter the process you want to delete (as integer): ");
+                    int num1 = input.nextInt();
+                    admin.removeSchedule(num1);
                     break;
                 case 10:
                     System.out.println(ANSI_YELLOW + "Manage Customer Feedbacks Page"+ANSI_RESET);

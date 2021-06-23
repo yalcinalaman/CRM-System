@@ -1,5 +1,6 @@
 package src;
 import java.util.Date;
+import java.util.Objects;
 
 public class Schedule implements Comparable<Schedule> {
 
@@ -21,6 +22,19 @@ public class Schedule implements Comparable<Schedule> {
         else
             return -1;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Schedule schedule = (Schedule) o;
+        return date.equals(schedule.getDate()) && process.equals(schedule.getProcess());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, process);
     }
 
     public Date getDate() {
