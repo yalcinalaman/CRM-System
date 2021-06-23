@@ -138,6 +138,7 @@ public class Company extends DatabaseCRM {
         return customer;
     }
 
+    // admin classında kullanmak için static yaptım @murat
     /**
      * Returns the admin which has the given ID
      *
@@ -145,13 +146,14 @@ public class Company extends DatabaseCRM {
      * @return Admin object with the given ID
      * @throws NoSuchElementException
      */
-    public Admin getAdmin(String ID) throws NoSuchElementException {
+    public static Admin getAdmin(String ID) throws NoSuchElementException {
         for (Admin value : admin) {
             if (value.getID().equals(ID)) return value;
         }
         throw new NoSuchElementException("There is no admin with the given ID");
     }
 
+    // admin classında kullanmak için static yaptım @murat
     /**
      * Returns the business developer which has the given ID
      *
@@ -159,13 +161,14 @@ public class Company extends DatabaseCRM {
      * @return BusinessDev object with the given ID
      * @throws NoSuchElementException
      */
-    public BusinessDeveloper getBusinessDev(String ID) throws NoSuchElementException {
+    public static BusinessDeveloper getBusinessDev(String ID) throws NoSuchElementException {
         for (BusinessDeveloper businessDeveloper : businessDev) {
             if (businessDeveloper.getID().equals(ID)) return businessDeveloper;
         }
         throw new NoSuchElementException("There is no business developer with the given ID");
     }
 
+    // admin classında kullanmak için static yaptım @murat
     /**
      * Returns the customer which has the given ID
      *
@@ -173,7 +176,7 @@ public class Company extends DatabaseCRM {
      * @return Customer object with the given ID
      * @throws NoSuchElementException
      */
-    public Customer getCustomer(String ID) throws NoSuchElementException {
+    public static Customer getCustomer(String ID) throws NoSuchElementException {
         SkipList.SkipListIter iter = (SkipList.SkipListIter) customer.iterator();
         while (iter.hasNext()) {
             Customer temp = (Customer) iter.next();
