@@ -445,6 +445,7 @@ public class DatabaseCRM {
     }
 
     public static class MessagesDB {
+	/**Reading wanted customer messages*/
         public static void readAllCustomerMessage(String customerId) throws SQLException {
 
             String query = "SELECT * FROM messages WHERE customer_id = '" + customerId + "';";
@@ -459,7 +460,7 @@ public class DatabaseCRM {
             }
         }
 	    
-	    
+	 /**Create a message for getting user as paramater*/
 	public static void createMessageDB(User user,String message) throws SQLException {
 
             String sql = "INSERT INTO messages (customer_id, message) VALUES (?,?)";
