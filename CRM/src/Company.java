@@ -294,8 +294,8 @@ public class Company extends DatabaseCRM {
     public static void removeAdmin(String ID) throws SQLException {
         for(int i = 0; i < admin.size(); i++){
             if(admin.get(i).getID().equals(ID)){
-                admin.remove(i);
                 DatabaseCRM.UserDB.deleteUserFromDB(admin.get(i).getID());
+                admin.remove(i);
                 System.out.println("Admin is removed!");
                 return;
             }
@@ -310,8 +310,8 @@ public class Company extends DatabaseCRM {
     public static void removeCustomer(String ID) throws SQLException {
         for(int i = 0; i < customer.size(); i++){
             if(customer.get(i).getID().equals(ID)){
-                customer.remove(customer.get(i));
                 DatabaseCRM.UserDB.deleteUserFromDB(customer.get(i).getID());
+                customer.remove(customer.get(i));
                 System.out.println("Customer is removed!");
                 return;
             }
@@ -326,8 +326,8 @@ public class Company extends DatabaseCRM {
     public static void removeBusinessDev(String ID) throws SQLException {
         for(int i = 0; i < businessDev.size(); i++){
             if(businessDev.get(i).getID().equals(ID)){
-                businessDev.remove(i);
                 DatabaseCRM.UserDB.deleteUserFromDB(businessDev.get(i).getID());
+                businessDev.remove(i);
                 System.out.println("Business Developer is removed!");
                 return;
             }
