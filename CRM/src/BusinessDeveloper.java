@@ -11,14 +11,14 @@ public class BusinessDeveloper extends User {
     public void manageOffering(){}
     public boolean addProduct(Product product){return true;}
     public Product removeProduct(Product product){return null;}
-    public void setCustomerName(int userID, String name){}
-    public void setCustomerSurName(int userID, String surName){}
-    public void setCustomerEmail(int userID, String email){}
-    public void setCustomerPhoneNumber(int userID, String phoneNumber){}
+    public void setCustomerName(String userID, String name){}
+    public void setCustomerSurName(String userID, String surName){}
+    public void setCustomerEmail(String userID, String email){}
+    public void setCustomerPhoneNumber(String userID, String phoneNumber){}
     public List<Customer> viewAllCustomers(){return null;}
     public void manageSchedule(){}
     public void addSchedule(){}
     public void removeSchedule(){}
-    public boolean findProduct(int ID){return true;}
+    public boolean findProduct(String ID){return true;}
 
 }
