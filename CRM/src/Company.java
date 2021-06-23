@@ -326,8 +326,8 @@ public class Company extends DatabaseCRM {
     public static void removeBusinessDev(String ID) throws SQLException {
         for(int i = 0; i < businessDev.size(); i++){
             if(businessDev.get(i).getID().equals(ID)){
-                businessDev.remove(i);
                 DatabaseCRM.UserDB.deleteUserFromDB(businessDev.get(i).getID());
+                businessDev.remove(i);
                 System.out.println("Business Developer is removed!");
                 return;
             }

@@ -14,7 +14,13 @@ public class Schedule implements Comparable<Schedule> {
 
     @Override
     public int compareTo(Schedule o) {
-        return 0;
+        if(date.compareTo(o.date) == 0)
+            return 0;
+        if(date.compareTo(o.date) > 0)
+            return 1;
+        else
+            return -1;
+
     }
 
     public Date getDate() {
