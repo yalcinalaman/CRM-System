@@ -280,7 +280,7 @@ public class CRMSystem{
                     System.out.print("Enter ID : ");
                     id = input.next();
                     pro = Company.getProduct(id);
-                    busDev.removeProduct(pro);
+                    busDev.removeProduct(id);
                     break;
                 case 3:
                     System.out.println(ANSI_YELLOW + "Manage Schedule Page"+ANSI_RESET);
